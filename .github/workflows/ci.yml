@@ -92,7 +92,7 @@ jobs:
           - name: Build
             command: pnpm run build
           - name: Test
-            command: pnpm run test
+            command: pnpm run test:coverage
 
     steps:
       - name: Checkout

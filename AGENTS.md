@@ -107,6 +107,13 @@ Main landing documentation policy:
 8. Other harnesses may still be supported elsewhere in the repo, but main landing docs must describe them impartially and MUST NOT promote them unjustly.
 9. Documentation MUST NOT include adapter package version specifiers or semver ranges such as `pi-acp@^0.0.22` or `@zed-industries/codex-acp@^0.9.5`. Keep documentation generic. Keep actual adapter pinning in code, config, or release logic instead.
 
+Harness documentation synchronization policy:
+
+1. Any PR that adds, removes, renames, or materially changes a built-in harness agent, harness-specific workflow, or harness-facing behavior MUST update [`skills/acpx/SKILL.md`](skills/acpx/SKILL.md) in the same change.
+2. The same PR MUST also update the matching harness doc under `agents/` using the existing capitalized filename convention such as `agents/Cursor.md` or `agents/Copilot.md`.
+3. If a harness-specific doc does not exist yet, create `agents/{Agent}.md` as part of the same change instead of leaving the harness documented only in shared surfaces.
+4. Do not merge harness-facing changes when [`skills/acpx/SKILL.md`](skills/acpx/SKILL.md) and the matching `agents/{Agent}.md` are out of sync.
+
 ## Common Commands
 
 - `pnpm run build` — build the distributable CLI

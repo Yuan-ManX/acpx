@@ -6,15 +6,24 @@ Repo: https://github.com/openclaw/acpx
 
 ### Changes
 
-- Agents/built-ins: add iFlow as a built-in ACP agent and document its built-in command. (#109) Thanks @gandli.
+### Breaking
+
+### Fixes
+
+## 2026.3.12 (v0.3.0)
+
+### Changes
+
+- Agents/built-ins: add Factory Droid and iFlow as built-in ACP agents and document their built-in commands. (#112, #109) Thanks @ironerumi and @gandli.
 
 ### Breaking
 
 ### Fixes
 
 - Codex/session config: treat `thought_level` as a compatibility alias for codex-acp `reasoning_effort` so `acpx codex set thought_level <value>` works on current codex-acp releases. Thanks @vincentkoc.
-- Session control/errors: surface actionable `set-mode` and `set` error messages when adapters reject unsupported session control params. (#123) Thanks @manthan787 and @vincentkoc.
+- Session control/errors: surface actionable `set-mode` and `set` error messages when adapters reject unsupported session control params, and preserve wrapped adapter metadata in those failures. (#123) Thanks @manthan787 and @vincentkoc.
 - Sessions/load fallback: suppress recoverable `session/load` error payloads during first-run prompt recovery and keep the session record rotated to the fresh ACP session. (#122) Thanks @lynnzc and @vincentkoc.
+- Permissions/stats: track client permission denials in permission stats. (#120) Thanks @lynnzc.
 - Agents/gemini: default to `--acp` for Gemini CLI and fall back to `--experimental-acp` for pre-0.33 releases. (#113)
 - ACP/prompt blocks: preserve structured ACP prompt blocks instead of flattening them during prompt handling to support images and non-text. (#103) Thanks @vincentkoc.
 - Images/prompt validation: validate structured image prompt block MIME types and base64 payloads, emit human-readable CLI usage errors, and add an explicit non-CI live Cursor ACP smoke test path. Thanks @vincentkoc.

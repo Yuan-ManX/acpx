@@ -1536,8 +1536,9 @@ export async function main(argv: string[] = process.argv): Promise<void> {
   }
 
   const config = await loadResolvedConfig(detectInitialCwd(argv.slice(2)));
-  const requestedJsonStrict = detectJsonStrict(argv.slice(2));
-  const requestedOutputFormat = detectRequestedOutputFormat(argv.slice(2), config.format);
+  const argvSlice = argv.slice(2);
+  const requestedJsonStrict = detectJsonStrict(argvSlice);
+  const requestedOutputFormat = detectRequestedOutputFormat(argvSlice, config.format);
   const requestedOutputPolicy = resolveOutputPolicy(requestedOutputFormat, requestedJsonStrict);
   const builtInAgents = listBuiltInAgents(config.agents);
 

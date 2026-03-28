@@ -224,7 +224,7 @@ async function runQueueOwnerRequest<TResult>(options: {
         finishReject(new Error(`Message buffer exceeded ${MAX_MESSAGE_BUFFER_SIZE} bytes`));
         return;
       }
-      
+
       let index = buffer.indexOf("\n");
       while (index >= 0) {
         const line = buffer.slice(0, index).trim();

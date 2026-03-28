@@ -54,9 +54,27 @@ test("fix_ci_failures owns CI monitoring until a terminal state", () => {
     assert.ok(edgeBlock, "Expected a fix_ci_failures edge block");
     assert.match(
       edgeBlock,
-      /cases:\s*\{[\s\S]*?check_final_conflicts:\s*"check_final_conflicts",[\s\S]*?comment_and_escalate_to_human:\s*"comment_and_escalate_to_human",[\s\S]*?\}/,
+      /cases:\s*\{[\s\S]*?check_final_conflicts:\s*"check_final_conflicts",[\s\S]*?comment_and_escalate_needs_judgment:\s*"comment_and_escalate_needs_judgment",[\s\S]*?\}/,
     );
     assert.doesNotMatch(edgeBlock, /collect_ci_state:/);
+  });
+});
+
+test("human handoff is split into ready-for-landing and needs-judgment lanes", () => {
+  const sourcePath = path.join(process.cwd(), "examples/flows/pr-triage/pr-triage.flow.ts");
+
+  return fs.readFile(sourcePath, "utf8").then((source) => {
+    assert.match(source, /comment_and_escalate_ready_for_landing:/);
+    assert.match(source, /comment_and_escalate_needs_judgment:/);
+    assert.match(source, /post_ready_for_landing_comment:/);
+    assert.match(source, /post_needs_judgment_comment:/);
+    assert.match(source, /"ready_for_human_landing_decision"/);
+    assert.match(source, /"needs_human_judgment"/);
+    assert.match(
+      source,
+      /const route = clean[\s\S]*options\.phase === "initial"[\s\S]*"bug_or_feature"[\s\S]*"comment_and_escalate_ready_for_landing"/,
+    );
+    assert.doesNotMatch(source, /comment_and_escalate_to_human:/);
   });
 });
 
@@ -68,22 +86,30 @@ test("maintenance PRs stay on the feature path without adding a new flow node", 
       source,
       /Dependency-only, tooling-only, docs-only, or lockfile-only maintenance PRs should still use the `feature` path\./,
     );
-    assert.match(source, /"feature_validation": "targeted_tests" \| "standard_checks" \| null,/);
     assert.match(
       source,
-      /validation_status:\s*"standard_checks_sufficient"[\s\S]*route:\s*"judge_refactor"/,
+      /validation_result": "validated" \| "standard_checks_sufficient" \| "blocked" \| "not_proven"/,
     );
     assert.doesNotMatch(source, /validate_via_standard_checks:/);
-    assert.doesNotMatch(source, /supportsStandardChecksValidation/);
+    assert.doesNotMatch(source, /buildTargetedTestPlan/);
+    assert.doesNotMatch(source, /ensureProjectDependencies/);
   });
 });
 
-test("validation shell helper does not hardcode zsh and falls back to bash/sh", () => {
+test("validation stays in ACP nodes instead of hardcoded runtime helpers", () => {
   const sourcePath = path.join(process.cwd(), "examples/flows/pr-triage/pr-triage.flow.ts");
 
   return fs.readFile(sourcePath, "utf8").then((source) => {
-    assert.doesNotMatch(source, /runCommand\("zsh", \["-lc", command\], options\)/);
-    assert.match(source, /command: "bash"/);
-    assert.match(source, /command: "sh"/);
+    assert.match(
+      source,
+      /reproduce_bug_and_test_fix:\s*\{[\s\S]*?nodeType:\s*"acp"[\s\S]*?promptReproduceBugAndTestFix/,
+    );
+    assert.match(
+      source,
+      /test_feature_directly:\s*\{[\s\S]*?nodeType:\s*"acp"[\s\S]*?promptTestFeatureDirectly/,
+    );
+    assert.match(source, /Own the validation plan yourself\./);
+    assert.doesNotMatch(source, /runValidationPlan/);
+    assert.doesNotMatch(source, /runShellLine/);
   });
 });

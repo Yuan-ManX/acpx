@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import { randomBytes } from "node:crypto";
 import {
   queueBaseDir,
   queueLockFilePath,
@@ -71,7 +72,9 @@ function parseQueueOwnerRecord(raw: unknown): QueueOwnerRecord | null {
 }
 
 function createOwnerGeneration(): number {
-  return Date.now() * 1_000 + Math.floor(Math.random() * 1_000);
+  const timestamp = Date.now() * 1_000;
+  const randomPart = randomBytes(4).readUInt32BE(0) % 1_000_000;
+  return timestamp + randomPart;
 }
 
 function nowIso(): string {

@@ -93,6 +93,12 @@ export async function writeSessionRecord(record: SessionRecord): Promise<void> {
     const tempFile = `${file}.${process.pid}.${Date.now()}.tmp`;
     const payload = JSON.stringify(persisted, null, 2);
     await fs.writeFile(tempFile, `${payload}\n`, "utf8");
+    if (process.platform === "win32") {
+      try {
+        await fs.unlink(file);
+      } catch {
+      }
+    }
     await fs.rename(tempFile, file);
 
     const sessionDir = sessionBaseDir();
